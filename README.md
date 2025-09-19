@@ -21,12 +21,10 @@ The project focuses on persistent storage across multiple abstraction layers. Ea
 
 ### Background
 
-The main idea behind a distributed file system is that multiple clients can access the same file system at the same time. One
-popular distributed file system, which serves as inspiration for this
-project, is Amazon's S3 storage system. S3 is used widely and provides
+The main idea behind a distributed file system is that multiple clients can access the same file system at the same time. I designed this system with similar principles to Amazon's S3 storage system, which provides
 clear semantics with a simple REST/HTTP API for accessing data. With
-these basics in place, S3 provides the storage layer that powers many
-of the modern apps I use every day.
+these design principles in place, my system provides the storage layer that can power
+modern applications.
 
 Like local file systems, distributed file systems support a number of
 high level file system operations. This implementation provides
@@ -129,16 +127,14 @@ errors.
 To return an error to the client, in the
 `DistributedFileSystemService.cpp` file, the implementation throws an exception using the
 [ClientError](gunrock_web/include/ClientError.h) exception class, and
-the gunrock web framework catches these errors and converts them to
+my gunrock web framework catches these errors and converts them to
 the right HTTP response and status code for that error.
 
 ## Local file system
 
 ### On-Disk File System: A Basic Unix File System
 
-The on-disk file system structures follow that of the
-very simple file system discussed
-[here](https://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf). On-disk,
+The on-disk file system structures follow a simple Unix-style design. On-disk,
 the structures are as follows:
 
 - A single block (4KB) super block
@@ -150,8 +146,7 @@ the structures are as follows:
 More details about on-disk structures can be found in the header
 [ufs.h](ufs.h). Specifically, this defines a very
 specific format for the super block, inode, and directory
-entries. Bitmaps have one bit per allocated unit as described in
-the referenced documentation.
+entries. Bitmaps have one bit per allocated unit as I designed them.
 
 As for directories, here is a little more detail. Each directory has
 an inode, and points to one or more data blocks that contain directory
@@ -165,8 +160,8 @@ directory's inode number. For the root directory in a file system,
 both `.` and `..` refer to the root directory.
 
 When the server is started, it is passed the name of the file system
-image file. The image is created by a tool called `mkfs`.
-It is self-explanatory and can be found
+image file. The image is created by my `mkfs` tool.
+The implementation can be found
 [here](gunrock_web/mkfs.c).
 
 When accessing the files on an image, the server reads in the
@@ -257,7 +252,7 @@ blocks before returning an error from the call.
 ## Read-only file system utilities
 
 For debugging disk images, the project includes seven small
-command-line utilities that access a given disk image. Example disk images and expected outputs are included in the
+command-line utilities that access a given disk image. I created example disk images and expected outputs in the
 [disk_testing](gunrock_web/tests/disk_images) directory. The utilities can handle multiple different disk image configurations
 and contents.
 
@@ -267,9 +262,9 @@ calls are `lookup`, `stat`, and `read`. The `ds3bits` utility includes
 `readSuperBlock`, `readInodeBitmap`, and
 `readDataBitmap` functions.
 
-The project includes a full set of test cases for testing the
+I created a full set of test cases for testing the
 read-only parts of the local file system. They can be run
-using the `test-readonly.sh` testing script.
+using my `test-readonly.sh` testing script.
 
 Note: The utilities are tested on correct disk images -- all data on disk in the test cases is consistent and
 correct.
